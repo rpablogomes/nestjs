@@ -1,16 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './users.entity';
 
 @Injectable()
-export class UsersService extends Repository<User> {
-  async getUsers(): Promise<any> {
-    // const qb = this.createQueryBuilder('user');
-    // qb.select(['user.id', 'user.firstName', 'user.lastName']);
+export class UsersService {
+  constructor(
+    @Inject('USERS_REPOSITORY')
+    private usersRepository: Repository<User>,
+  ) {}
+  async getUsers(): Promise<User[]> {
+    const qb = this.usersRepository.createQueryBuilder('user');
+    qb.select(['user.firstName']);
 
-    // console.log(qb);
+    return qb.getMany();
+  }
 
-    // return qb.getMany();
-    return 'ok';
+  async getOneUser(id: number): Promise<User> {
+    const qb = this.usersRepository.createQueryBuilder('user');
+    qb.andWhere('user.id = :id', {
+      id,
+    });
+    qb.select(['user.id', 'user.firstName', 'user.lastName']);
+
+    return qb.getOne();
   }
 }
