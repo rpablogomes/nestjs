@@ -24,4 +24,10 @@ export class UsersService {
 
     return qb.getOne();
   }
+
+  async CreateOneUser(user: any): Promise<any> {
+    const qb = await this.usersRepository.save(user);
+
+    return qb;
+  }
 }
